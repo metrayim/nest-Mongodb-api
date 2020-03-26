@@ -2,20 +2,28 @@
 
 import { Controller, Get,Post, Body, Param, Patch, Delete } from '@nestjs/common';
 import { ProductsService } from './product.service';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('Products')
+@ApiTags('Product')
 export class ProductsController {
   constructor(private readonly productsService:ProductsService) {}
 
   @Post()
- async addProduct(@Body('title') prodTitle:string,@Body('desc') prodDecs:string,@Body('price') prodPrice:number){
+ async addProduct(
+     @Body('title') prodTitle:string,
+     @Body('desc') prodDecs:string,
+     @Body('price') prodPrice:number
+     ){
      const generateId= await this.productsService.insertProduct(prodTitle,prodDecs,prodPrice);
+     console.log(prodDecs,prodPrice,prodTitle,"add")
        return {id:generateId}
     
   }
   @Get()
-  getAllProducts(@Param() id){
-      return this.productsService.getAllProducts();
+ async getAllProducts(@Param() id){
+      const products= this.productsService.getAllProducts();
+      return products;
 
   }
   @Get(':id')
@@ -24,8 +32,14 @@ export class ProductsController {
 
   }
   @Patch(":id")
-  updateProduct(@Param('id') id:string,@Body('title') prodTitle:string,@Body('desc') prodDecs:string,@Body('price') prodPrice:number){
-     this.productsService.UpdateProduct(id,prodTitle,prodDecs,prodPrice)
+ async updateProduct(
+     @Param('id') id:string,
+     @Body('title') prodTitle:string,
+     @Body('desc') prodDecs:string,
+     @Body('price') prodPrice:number)
+     {
+    await this.productsService.UpdateProduct(id,prodTitle,prodDecs,prodPrice)
+    console.log(id,prodPrice,prodTitle,prodDecs,'hehe')
       return null;
 
   }
